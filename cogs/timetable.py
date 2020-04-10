@@ -20,7 +20,7 @@ class Timetable(commands.Cog):
         }
 
         resp = await session.request('get', 'https://web1.normanhurb-h.schools.nsw.edu.au/timetables/ajax/searchStudents', params = params)
-        print('[QUERY]', resp.status, resp.reason)  
+        #print('[QUERY]', resp.status, resp.reason)  
         return await resp.text()
 
     async def fetch_timetable(self, session, student_id):
@@ -28,7 +28,7 @@ class Timetable(commands.Cog):
                                      'https://web1.normanhurb-h.schools.nsw.edu.au/timetables/timetable', 
                                       params = {'student' : str(student_id)})
 
-        print('[TIMETABLE]', resp.status, resp.reason)  
+        #print('[TIMETABLE]', resp.status, resp.reason)  
         return await resp.text()
 
     async def parse_today_classes(self, html):
