@@ -91,9 +91,7 @@ class Timetable(commands.Cog):
         title_with_year = student_info['title']
         title = student_info['title'].split(' - ')[0]
         student_id = str(student_info['id'])
-
-        print(type(student_id), student_id)
-
+        
         if f'{title}|{student_id}' in [role.name for role in ctx.author.roles]:
             embed = discord.Embed(title='Cannot assign role.',
                                   description=f'{ctx.author.mention} already identified as "{title_with_year}"',
@@ -168,15 +166,21 @@ class Timetable(commands.Cog):
 
             today_classes = await self.parse_today_classes(timetable_html)
 
-        embed = discord.Embed(title=f"Showing Today's Classes for \"{student_info['title']}\":",
-                              timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
-                              colour=discord.Colour.from_rgb(80, 250, 123))
 
-        for today_class in today_classes:
-            title = today_class['title'] 
-            info = '\n'.join([line.strip() for line in today_class['info'].split('\n') if line.strip() != ''])
+        if not today_classes == []:
+            embed = discord.Embed(title=f"Showing Today's Classes for \"{student_info['title']}\":",
+                                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
+                                  colour=discord.Colour.from_rgb(80, 250, 123))
+            for today_class in today_classes:
+                title = today_class['title'] 
+                info = '\n'.join([line.strip() for line in today_class['info'].split('\n') if line.strip() != ''])
 
-            embed.add_field(name=f'Period {today_classes.index(today_class)+1}', value=f'**{title}**\n{info}', inline=False)
+                embed.add_field(name=f'Period {today_classes.index(today_class)+1}', value=f'**{title}**\n{info}', inline=False)
+        else: 
+            embed = discord.Embed(title=f"No periods today for \"{student_info['title']}\".",
+                                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
+                                  colour=discord.Colour.from_rgb(80, 250, 123))
+    
         await ctx.send(embed=embed)
 
     @timetable.error
