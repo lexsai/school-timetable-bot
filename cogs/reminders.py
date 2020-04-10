@@ -42,7 +42,7 @@ class Reminders(commands.Cog):
 
     @class_checker.before_loop
     async def before_class_checker(self):
-        print('waiting...')
+        print('waiting..')
         await self.bot.wait_until_ready()
 
     @class_checker.after_loop
