@@ -47,7 +47,7 @@ class Reminders(commands.Cog):
 
     @class_checker.after_loop
     async def after_class_checker(self):
-        if class_checker.failed():
+        if self.class_checker.failed():
             traceback.print_exc()
 
 def setup(bot):
