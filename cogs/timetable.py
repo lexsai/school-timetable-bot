@@ -20,7 +20,7 @@ class Timetable(commands.Cog):
         title = student_info['title']
         student_id = str(student_info['id'])
         
-        if f'{title.split(' - ')[0]}|{student_id}' in [role.name for role in ctx.author.roles]:
+        if f"{title.split(' - ')[0]}|{student_id}" in [role.name for role in ctx.author.roles]:
             embed = discord.Embed(title='Cannot assign role.',
                                   description=f'{ctx.author.mention} already identified as "{title}"',
                                   timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
