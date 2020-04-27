@@ -1,10 +1,12 @@
 import traceback
 import datetime
 
-import pytz
 import aiohttp
+import pytz
 import discord
 from discord.ext import tasks, commands
+
+import custom_classes as cc
 
 class Reminders(commands.Cog):
     def __init__(self, bot):
@@ -20,21 +22,19 @@ class Reminders(commands.Cog):
         self.current_class = param
 
         await ctx.send('success.')
-
+        
     @tasks.loop(minutes=1)
     async def class_checker(self):
-        timetable_cog = self.bot.get_cog('Timetable')
-
         async with aiohttp.ClientSession() as session:
-            student_info = await timetable_cog.query_student_info(session, 'chi yung tsai')
-            timetable_html = await timetable_cog.fetch_timetable(session, student_info['id'])
-            current_class = await timetable_cog.parse_current_class(timetable_html)
+            student_info = await cc.query_student_info(session, 'chi yung tsai')
+            timetable_html = await cc.fetch_timetable(session, student_info['id'])
+            current_class = await cc.parse_current_class(timetable_html)
 
         if self.current_class != current_class:
             self.current_class = current_class
             for guild in self.bot.guilds:
                 embed = discord.Embed(title='NEXT PERIOD',
-                                      description=f'@everyone',
+                                      description='@everyone',
                                       timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                                       colour=discord.Colour.from_rgb(241, 250, 250))
                 await guild.text_channels[0].send(embed=embed)

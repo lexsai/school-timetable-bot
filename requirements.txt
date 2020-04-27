@@ -2,3 +2,4 @@ discord.py
 aiohttp
 pytz
 beautifulsoup4
+jishaku
