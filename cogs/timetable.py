@@ -27,7 +27,7 @@ class Timetable(commands.Cog):
                                   colour=discord.Colour.from_rgb(255, 85, 85))
             await ctx.send(embed=embed)
         else:
-            role = await ctx.guild.create_role(name=f'{title.split(' - ')[0]}|{student_id}')
+            role = await ctx.guild.create_role(name=f"{title.split(' - ')[0]}|{student_id}")
             await ctx.author.add_roles(role)
 
             embed = discord.Embed(title='Assigned role.',
