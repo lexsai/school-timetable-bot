@@ -11,16 +11,11 @@ import custom_classes as cc
 class Reminders(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.current_class = None
+        self.bot.current_class = None
         self.class_checker.start()
 
     def cog_unload(self):
         self.class_checker.cancel()
-    
-    @commands.command()
-    async def force(self, ctx, *, forced_class):
-        self.current_class = forced_class
-        await ctx.send('success.')
 
     @tasks.loop(minutes=1)
     async def class_checker(self):
@@ -29,8 +24,8 @@ class Reminders(commands.Cog):
             timetable_html = await cc.fetch_timetable(session, student_info['id'])
             current_class = await cc.parse_current_class(timetable_html)
 
-        if self.current_class != current_class:
-            self.current_class = current_class
+        if self.bot.current_class != current_class:
+            self.bot.current_class = current_class
 
             if current_class = None:
                 embed = discord.Embed(title='END OF PERIOD',
