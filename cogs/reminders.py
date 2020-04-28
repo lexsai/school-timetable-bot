@@ -17,12 +17,6 @@ class Reminders(commands.Cog):
     def cog_unload(self):
         self.class_checker.cancel()
 
-    @commands.command()
-    async def force_class(self, ctx, *, param):
-        self.current_class = param
-
-        await ctx.send('success.')
-        
     @tasks.loop(minutes=1)
     async def class_checker(self):
         async with aiohttp.ClientSession() as session:
