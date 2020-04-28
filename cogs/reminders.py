@@ -27,7 +27,7 @@ class Reminders(commands.Cog):
         if self.bot.current_class != current_class:
             self.bot.current_class = current_class
 
-            if current_class = None:
+            if current_class is None:
                 embed = discord.Embed(title='END OF PERIOD',
                                       description='No class as of now.\n@everyone',
                                       timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
