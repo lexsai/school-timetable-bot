@@ -16,6 +16,11 @@ class Reminders(commands.Cog):
 
     def cog_unload(self):
         self.class_checker.cancel()
+    
+    @commands.command()
+    async def force(self, ctx, *, forced_class):
+        self.current_class = forced_class
+        await ctx.send('success.')
 
     @tasks.loop(minutes=1)
     async def class_checker(self):
