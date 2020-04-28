@@ -37,7 +37,7 @@ class Reminders(commands.Cog):
                                       description='@everyone',
                                       timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                                       colour=discord.Colour.from_rgb(241, 250, 250))
-                await guild.text_channels[0].send(embed=embed)
+                await discord.utils.get(guild.text_channels, name='class-updates').send(embed=embed)
             print(f'CHANGED: {current_class}')
 
     @class_checker.before_loop
