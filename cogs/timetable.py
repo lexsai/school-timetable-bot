@@ -1,3 +1,4 @@
+import re
 import datetime
 import traceback
 
@@ -20,7 +21,7 @@ class Timetable(commands.Cog):
         title = student_info['title']
         student_id = str(student_info['id'])
         
-        if f"{title.split(' - ')[0]}|{student_id}" in [role.name for role in ctx.author.roles]:
+        if re.match(r'[a-zA-Z-]*\, [a-zA-Z-]*\|\d{1,}', [role.name for role in ctx.author.roles]):
             embed = discord.Embed(title='Cannot assign role.',
                                   description=f'{ctx.author.mention} already identified as "{title}"',
                                   timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
@@ -85,7 +86,7 @@ class Timetable(commands.Cog):
         else: 
             traceback.print_exc()
 
-    @commands.command()
+    @commands.command(aliases=['today'])
     async def timetable(self, ctx, *, query = None):
         async with aiohttp.ClientSession() as session:
             student_info = await cc.find_student_info(ctx, session, query)   
