@@ -5,6 +5,9 @@ class Testing(commands.Cog):
     def __init__(self,bot):
         self.bot = bot
 
+    async def cog_check(self, ctx):	
+        return await self.bot.is_owner(ctx.author)
+
     @commands.command()
     async def force(self, ctx, *, forced_class):
         self.bot.current_class = forced_class
