@@ -28,10 +28,10 @@ class Timetable(commands.Cog):
         async with aiohttp.ClientSession() as session:
             student_info = await cc.query_student_info(session, query)
 
-        title = student_info['title']
+        title = student_info['title'].split(' - ')[0]
         student_id = str(student_info['id'])        
 
-        role = await ctx.guild.create_role(name=f"{title.split(' - ')[0]}|{student_id}")
+        role = await ctx.guild.create_role(name=f"{title}|{student_id}")
         await ctx.author.add_roles(role)
 
         embed = discord.Embed(title='Assigned role.',
