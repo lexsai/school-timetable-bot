@@ -15,27 +15,32 @@ class Timetable(commands.Cog):
 
     @commands.command()
     async def identify(self, ctx, *, query):
+        if any(re.match(r'[a-z A-Z-]*\, [a-z A-Z-]*\|\d{1,}', role.name) for role in ctx.author.roles):
+
+            identity = [re.match(r'[a-z A-Z-]*\, [a-z A-Z-]*\|\d{1,}', role.name) 
+                    for role in ctx.author.roles][0]
+
+            embed = discord.Embed(title='Cannot assign role.',
+                                  description=f'{ctx.author.mention} already identified as "{identity}"',
+                                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
+                                  colour=discord.Colour.from_rgb(255, 85, 85))
+            await ctx.send(embed=embed)
+            return
+
         async with aiohttp.ClientSession() as session:
             student_info = await cc.query_student_info(session, query)
 
         title = student_info['title']
-        student_id = str(student_info['id'])
-        
-        if any(re.match(r'[a-z A-Z-]*\, [a-z A-Z-]*\|\d{1,}', role.name) for role in ctx.author.roles):
-            embed = discord.Embed(title='Cannot assign role.',
-                                  description=f'{ctx.author.mention} already identified as "{title}"',
-                                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
-                                  colour=discord.Colour.from_rgb(255, 85, 85))
-            await ctx.send(embed=embed)
-        else:
-            role = await ctx.guild.create_role(name=f"{title.split(' - ')[0]}|{student_id}")
-            await ctx.author.add_roles(role)
+        student_id = str(student_info['id'])        
 
-            embed = discord.Embed(title='Assigned role.',
-                      description=f'{ctx.author.mention} identified as "{title}"',
-                      timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
-                      colour=discord.Colour.from_rgb(80, 250, 123))
-            await ctx.send(embed=embed)
+        role = await ctx.guild.create_role(name=f"{title.split(' - ')[0]}|{student_id}")
+        await ctx.author.add_roles(role)
+
+        embed = discord.Embed(title='Assigned role.',
+                  description=f'{ctx.author.mention} identified as "{title}"',
+                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
+                  colour=discord.Colour.from_rgb(80, 250, 123))
+        await ctx.send(embed=embed)
 
     @identify.error
     async def identify_error(self, ctx, error):
