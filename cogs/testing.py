@@ -9,10 +9,12 @@ class Testing(commands.Cog):
         return await ctx.bot.is_owner(ctx.author)
 
     @commands.command()
-    async def purge_roles(self, ctx):
-    	for role in ctx.guild.roles:
-    		if not role.members:
-    			await role.delete()
+    async def prune_roles(self, ctx):
+    	pruned_roles = [role for role in ctx.guild.roles if not role.members]
+    	for role in pruned_roles:
+    		await role.delete()
+    	
+    	await ctx.send(f'Deleted {len(pruned_roles)} unused role(s).')
 
     @commands.command()
     async def force(self, ctx, *, forced_class):
