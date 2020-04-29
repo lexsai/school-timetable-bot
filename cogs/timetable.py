@@ -21,8 +21,9 @@ class Timetable(commands.Cog):
         title = student_info['title']
         student_id = str(student_info['id'])
         
-        r=re.compile(r'[a-zA-Z-]*\, [a-zA-Z-]*\|\d{1,}')
-        if any(r.match(role.name) for role in ctx.author.roles):
+        print(any(re.match(r'[a-zA-Z-]*\, [a-zA-Z-]*\|\d{1,}', role.name) for role in ctx.author.roles))
+        if any(re.match(r'[a-zA-Z-]*\, [a-zA-Z-]*\|\d{1,}', role.name) for role in ctx.author.roles):
+            print('DEUS')
             embed = discord.Embed(title='Cannot assign role.',
                                   description=f'{ctx.author.mention} already identified as "{title}"',
                                   timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    

@@ -9,7 +9,10 @@ class NormoBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        extensions = sorted([f"cogs.{os.path.splitext(cog)[0]}" for cog in os.listdir("cogs") if os.path.splitext(cog)[1] == '.py'])   
+        extensions = sorted([f"cogs.{os.path.splitext(cog)[0]}" 
+                             for cog in os.listdir("cogs") 
+                             if os.path.splitext(cog)[1] == '.py'])
+                                
         self.load_extensions(extensions + ["jishaku"])
         
     def load_extensions(self, extensions):
