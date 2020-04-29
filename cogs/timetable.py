@@ -17,7 +17,7 @@ class Timetable(commands.Cog):
     async def identify(self, ctx, *, query):
         identity = [re.match(r'[a-z A-Z-]*\, [a-z A-Z-]*\|\d{1,}', role.name) for role in ctx.author.roles]
         if any(identity):
-            name = identity.match.split('|')[0]
+            name = identity[0].string.split('|')[0]
             embed = discord.Embed(title='Cannot assign role.',
                                   description=f'{ctx.author.mention} already identified as "{name}-"',
                                   timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
