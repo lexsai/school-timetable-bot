@@ -19,7 +19,7 @@ class Timetable(commands.Cog):
         if any(identity_roles):
             name = [identity for identity in identity_roles if identity is not None][0].string.split('|')[0]
             embed = discord.Embed(title='Cannot assign role.',
-                                  description=f'{ctx.author.mention} already identified as "{name}-"',
+                                  description=f'{ctx.author.mention} already identified as "{name}".',
                                   timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                                   colour=discord.Colour.from_rgb(255, 85, 85))
             await ctx.send(embed=embed)
