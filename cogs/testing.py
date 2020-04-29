@@ -6,7 +6,7 @@ class Testing(commands.Cog):
         self.bot = bot
 
     def cog_check(self, ctx):	
-        return await self.bot.is_owner(ctx.author)
+        return await ctx.bot.is_owner(ctx.author)
 
     @commands.command()
     async def force(self, ctx, *, forced_class):
