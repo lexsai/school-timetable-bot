@@ -14,10 +14,10 @@ async def on_ready():
     print('-')
     print(f'Logged in as "{bot.user.name}" - User ID : {bot.user.id}')
     print(f'Command Prefix: {bot.command_prefix}')
-    print('-')
+    print('-')	
 
 if __name__ == '__main__':
-    bot.run('Njk3Mjk2NzcxMTIyMDY5NTE1.Xo1Sww.bjFBDvKhOEF_YY2sPFsaIC8WeOk')
-    #bot.run('Njk3NTgwODI3OTY1NTIxOTQw.Xo5W-A.at8TJGL9KtEZmS0i6Q0jEMZAkHM')
+    #bot.run('Njk3Mjk2NzcxMTIyMDY5NTE1.Xo1Sww.bjFBDvKhOEF_YY2sPFsaIC8WeOk')
+    bot.run('Njk3NTgwODI3OTY1NTIxOTQw.Xo5W-A.at8TJGL9KtEZmS0i6Q0jEMZAkHM')
 
 

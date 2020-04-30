@@ -5,6 +5,8 @@ import aiohttp
 from bs4 import BeautifulSoup
 from discord.ext import commands
 
+import custom_classes as cc
+
 async def fetch_student(session, query):
     params = {
         'query' : query,
@@ -63,15 +65,11 @@ async def find_student_info(ctx, session, query):
         student_info = await query_student_info(session, query)
     else:
         try:
-            identity = [re.match(r'[a-z A-Z-]*\, [a-z A-Z-]*\|\d{1,}', role.name) 
-                        for role in ctx.author.roles
-                        if re.match(r'[a-z A-Z-]*\, [a-z A-Z-]*\|\d{1,}', role.name) is not None][0].string.split('|')
+            identity = cc.get_identity(ctx)[0]
+            student_info = await query_student_info(session, identity.split('|')[0])
 
-            print(identity)
         except Exception as e:
             print(e)
             raise commands.BadArgument
-
-        student_info = await query_student_info(session, identity[0])
 
     return student_info
