@@ -65,6 +65,8 @@ async def find_student_info(ctx, session, query):
             identity = [re.match(r'[a-z A-Z-]*\, [a-z A-Z-]*\|\d{1,}', role.name) 
                         for role in ctx.author.roles
                         if re.match(r'[a-z A-Z-]*\, [a-z A-Z-]*\|\d{1,}', role.name) is not None][0].split('|')
+
+            print(identity)
         except:
             raise commands.BadArgument
 
