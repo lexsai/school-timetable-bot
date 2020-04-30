@@ -67,7 +67,8 @@ async def find_student_info(ctx, session, query):
                         if re.match(r'[a-z A-Z-]*\, [a-z A-Z-]*\|\d{1,}', role.name) is not None][0].split('|')
 
             print(identity)
-        except:
+        except Exception as e:
+            print(e)
             raise commands.BadArgument
 
         student_info = await query_student_info(session, identity[0])
