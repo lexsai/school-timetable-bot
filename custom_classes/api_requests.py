@@ -62,10 +62,12 @@ async def find_student_info(ctx, session, query):
         student_info = await query_student_info(session, query)
     else:
         try:
-            cached_data = [role.name.split('|') for role in ctx.author.roles if len(role.name.split('|')) == 2][0]
+            identity = [re.match(r'[a-z A-Z-]*\, [a-z A-Z-]*\|\d{1,}', role.name) 
+                        for role in ctx.author.roles
+                        if re.match(r'[a-z A-Z-]*\, [a-z A-Z-]*\|\d{1,}', role.name) is not None][0]
         except:
             raise commands.BadArgument
 
-        student_info = await query_student_info(session, cached_data[0])
+        student_info = await query_student_info(session, identity[0])
 
     return student_info

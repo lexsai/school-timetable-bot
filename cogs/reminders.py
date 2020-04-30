@@ -29,17 +29,16 @@ class Reminders(commands.Cog):
 
             if current_class is None:
                 embed = discord.Embed(title='END OF PERIOD',
-                                      description='No class as of now.\n@everyone',
+                                      description='No class as of now.',
                                       timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                                       colour=discord.Colour.from_rgb(241, 250, 250))              
             else:
                 embed = discord.Embed(title='NEXT PERIOD',
-                                      description='@everyone',
                                       timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                                       colour=discord.Colour.from_rgb(241, 250, 250))
             for guild in self.bot.guilds:
                 try:
-                    await discord.utils.get(guild.text_channels, name='class-updates').send(embed=embed)
+                    await discord.utils.get(guild.text_channels, name='class-updates').send('@everyone', embed=embed)
                 except AttributeError:
                     pass
             print(f'CHANGED: {current_class}')
