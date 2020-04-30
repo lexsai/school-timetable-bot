@@ -13,6 +13,24 @@ class Timetable(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def cog_command_error(self, ctx, error):
+        if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
+            embed = discord.Embed(title='Student not found.',
+                                  description=f'Usage: `>{ctx.command.name} <name of student>`',
+                                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
+                                  colour=discord.Colour.from_rgb(255, 85, 85))
+            await ctx.send(embed=embed)   
+
+        elif isinstance(error, commands.CommandOnCooldown):
+            embed = discord.Embed(title='Cooldown Reached',
+                                  description=f'Please retry in `{error.retry_after}`.\n*stop trying to frick my bot pls*',
+                                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
+                                  colour=discord.Colour.from_rgb(255, 85, 85))
+            await ctx.send(embed=embed)   
+
+        else:
+            traceback.print_exc()
+
     @commands.command()
     async def identify(self, ctx, *, query):
         identity = cc.get_identity(ctx)
@@ -40,18 +58,7 @@ class Timetable(commands.Cog):
                   colour=discord.Colour.from_rgb(80, 250, 123))
         await ctx.send(embed=embed)
 
-    @identify.error
-    async def identify_error(self, ctx, error):
-        if isinstance(error, commands.MissingRequiredArgument) or isinstance(error, commands.BadArgument):
-            embed = discord.Embed(title='Student not found.',
-                                  description='Usage: `>identify <name of student>`',
-                                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
-                                  colour=discord.Colour.from_rgb(255, 85, 85))
-            await ctx.send(embed=embed)
-
-        else: 
-            traceback.print_exc()
-
+    @commands.cooldown(1, 10, commands.BucketType.member)
     @commands.command()
     async def now(self, ctx, *, query=None):
         async with aiohttp.ClientSession() as session:
@@ -77,18 +84,7 @@ class Timetable(commands.Cog):
                               colour=discord.Colour.from_rgb(80, 250, 123))
         await ctx.send(embed=embed)
 
-    @now.error
-    async def now_error(self, ctx, error):
-        if isinstance(error, commands.MissingRequiredArgument) or isinstance(error, commands.BadArgument):
-            embed = discord.Embed(title='Student not found.',
-                                  description='Usage: `>now <name of student>`',
-                                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
-                                  colour=discord.Colour.from_rgb(255, 85, 85))
-            await ctx.send(embed=embed)
-
-        else: 
-            traceback.print_exc()
-
+    @commands.cooldown(1, 10, commands.BucketType.member)
     @commands.command(aliases=['today'])
     async def timetable(self, ctx, *, query = None):
         async with aiohttp.ClientSession() as session:
@@ -113,18 +109,6 @@ class Timetable(commands.Cog):
                                   colour=discord.Colour.from_rgb(80, 250, 123))
     
         await ctx.send(embed=embed)
-
-    @timetable.error
-    async def timetable_error(self, ctx, error):
-        if isinstance(error, commands.MissingRequiredArgument) or isinstance(error, commands.BadArgument):
-            embed = discord.Embed(title='Student not found.',
-                                  description='Usage: `>timetable <name of student>`',
-                                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
-                                  colour=discord.Colour.from_rgb(255, 85, 85))
-            await ctx.send(embed=embed)
-
-        else: 
-            traceback.print_exc()
 
 
 def setup(bot):
