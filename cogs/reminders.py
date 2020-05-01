@@ -22,7 +22,7 @@ class Reminders(commands.Cog):
         async with aiohttp.ClientSession() as session:
             student_info = await cc.query_student_info(session, 'chi yung tsai')
             timetable_html = await cc.fetch_timetable(session, student_info['id'])
-            current_class = await cc.parse_current_class(timetable_html)
+            current_class = cc.find_current_class(timetable_html)
 
         if self.bot.current_class != current_class:
             self.bot.current_class = current_class

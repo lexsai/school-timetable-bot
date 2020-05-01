@@ -66,45 +66,76 @@ class Timetable(commands.Cog):
 
             timetable_html = await cc.fetch_timetable(session, student_info['id'])
 
-            current_class = await cc.parse_current_class(timetable_html)
+            current_class = cc.find_current_class(timetable_html)
 
-        if current_class == None:
+        if current_class:
+            period = current_class['period'].text[1:]
+            title = current_class['info']['title'] 
+            info = cc.format_description(current_class['info']['description'])
+
+            embed = discord.Embed(title=f"Showing Current Class for \"{student_info['title']}\":",
+                                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
+                                  colour=discord.Colour.from_rgb(80, 250, 123))
+            embed.add_field(name=f"Period {period}", value=f'**{title}**\n{info}', inline=False)
+            await ctx.send(embed=embed)
+
+        else:
             embed = discord.Embed(title=f"No timetabled class currently for \"{student_info['title']}\":",
                   timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                   colour=discord.Colour.from_rgb(80, 250, 123))
             await ctx.send(embed=embed)
-            return
-
-        title = current_class['title'] 
-        info = '\n'.join([line.strip() for line in current_class['info'].split('\n') if line.strip() != ''])
-
-        embed = discord.Embed(title=f"Showing Current Class for \"{student_info['title']}\":",
-                              description=f'**{title}**\n{info}',
-                              timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
-                              colour=discord.Colour.from_rgb(80, 250, 123))
-        await ctx.send(embed=embed)
-
+            
     @commands.cooldown(1, 10, commands.BucketType.member)
-    @commands.command(aliases=['today'])
-    async def timetable(self, ctx, *, query = None):
+    @commands.command()
+    async def today(self, ctx, *, query = None):
         async with aiohttp.ClientSession() as session:
             student_info = await cc.find_student_info(ctx, session, query)   
 
             timetable_html = await cc.fetch_timetable(session, student_info['id'])
 
-            today_classes = await cc.parse_today_classes(timetable_html)
+            today_classes = cc.find_today_classes(timetable_html)
 
-        if not today_classes == []:
+        if today_classes:
             embed = discord.Embed(title=f"Showing Today's Classes for \"{student_info['title']}\":",
                                   timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                                   colour=discord.Colour.from_rgb(80, 250, 123))
             for today_class in today_classes:
-                title = today_class['title'] 
-                info = '\n'.join([line.strip() for line in today_class['info'].split('\n') if line.strip() != ''])
+                period = today_class['period'][2:]
+                title = today_class['info']['title'] 
+                info = cc.format_description(today_class['info']['description'])
 
-                embed.add_field(name=f'Period {today_classes.index(today_class)+1}', value=f'**{title}**\n{info}', inline=False)
+                embed.add_field(name=f"Period {period}", value=f'**{title}**\n{info}', inline=False)
         else: 
             embed = discord.Embed(title=f"No periods today for \"{student_info['title']}\".",
+                                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
+                                  colour=discord.Colour.from_rgb(80, 250, 123))
+    
+        await ctx.send(embed=embed)
+
+    @commands.cooldown(1, 10, commands.BucketType.member)
+    @commands.command()
+    async def timetable(self, ctx, week, day_of_week, *, query = None):
+        day_index = cc.SchoolDays[day_of_week.upper()].value
+
+        async with aiohttp.ClientSession() as session:
+            student_info = await cc.find_student_info(ctx, session, query)   
+
+            timetable_html = await cc.fetch_timetable(session, student_info['id'])
+
+            day_classes = cc.find_day_classes(week.lower(), day_index, timetable_html)
+
+        if day_classes:
+            embed = discord.Embed(title=f"Showing Classes for \"{student_info['title']}\" on {day_of_week.upper()}, Week {week.upper()}:",
+                                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
+                                  colour=discord.Colour.from_rgb(80, 250, 123))
+            for day_class in day_classes:
+                period = day_class['period'][2:]
+                title = day_class['info']['title'] 
+                info = cc.format_description(day_class['info']['description'])
+
+                embed.add_field(name=f"Period {period}", value=f'**{title}**\n{info}', inline=False)
+        else: 
+            embed = discord.Embed(title=f"No periods on {day_of_week.upper()}, Week {week.upper()} for \"{student_info['title']}\".",
                                   timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                                   colour=discord.Colour.from_rgb(80, 250, 123))
     

@@ -24,31 +24,81 @@ async def fetch_timetable(session, student_id):
 
     return await resp.text()
 
-async def parse_today_classes(html):
+def find_period_classes(html):
     soup = BeautifulSoup(html, 'html.parser')
 
-    today_classes_html = soup.findAll('td', {'class' : 'timetable-dayperiod today'})
-    today_classes = [{'title' : today_class.find('strong').text,
-                      'info' : today_class.find('br').text} for today_class in today_classes_html]
+    periods = [period for period in 
+               soup.findAll('th', {'class' : 'timetable-period'})
+               if re.match(r'P\d{1}', period.text)]
+
+    return periods
+
+def parse_period_classes(html):
+    periods = find_period_classes(html)
+
+    weekA, weekB = periods[:len(periods)//2], periods[len(periods)//2:]
+
+    period_classes = {**cc.parse_timetable('a',weekA), **cc.parse_timetable('b',weekB)}
+
+    return period_classes
+
+def find_today_classes(html):
+    periods = parse_period_classes(html)
+
+    today_classes_html = []
+    for period, classes in periods.items():
+        for _class in classes:
+            try:
+                if 'today' in _class['class']:
+                    today_classes_html.append((period, _class.find('div', {'class' : 'timetable-class'})))
+            except TypeError:
+                pass
+
+    today_classes = [{'period' : today_class[0],
+                      'info' : {'title' : today_class[1].find('strong').text,
+                                'description' : today_class[1].find('br').text}} for today_class in today_classes_html 
+                                if today_class[1]]
 
     return today_classes
 
-async def parse_current_class(html):
-    soup = BeautifulSoup(html, 'html.parser')
+def find_current_class(html):
+    periods = find_period_classes(html)
 
-    current_classes_html = soup.findAll('tr', {'class' : 'now'})
-
-    try:
-        current_class_html = [current.find('td', {'class' : 'timetable-dayperiod today'}) 
-                              for current in current_classes_html 
-                              if current.find('td', {'class' : 'timetable-dayperiod today'}) != None][0]
-    except IndexError:
-        return None
-
-    current_class = {'title' : current_class_html.find('strong').text, 
-                     'info' :  current_class_html.find('br').text}    
+    current_class_html = None
+    for period in periods:
+        now_row = period.find_parent('tr', {'class' : 'now'})
+        if now_row:
+            current_class = now_row.find('td', {'class' : 'timetable-dayperiod today'})
+            if current_class:
+                current_class_html = (period, current_class)
+    
+    if current_class_html:    
+        current_class = {'period' : current_class_html[0],
+                         'info' : {'title' : current_class_html[1].find('strong').text,
+                                   'description' : current_class_html[1].find('br').text}}
+    else:
+        current_class = None
 
     return current_class
+
+def find_day_classes(week, day_index, html):
+    periods = parse_period_classes(html)
+
+    day_classes_html = []
+    for period, _class in periods.items():
+        if period.startswith(week):
+            try:
+                day_classes_html.append((period, _class[day_index].find('div', {'class' : 'timetable-class'})))
+            except TypeError:
+                pass
+
+    day_classes = [{'period' : day_class[0],
+                      'info' : {'title' : day_class[1].find('strong').text,
+                                'description' : day_class[1].find('br').text}} for day_class in day_classes_html 
+                                if day_class[1]]
+
+    return day_classes
+
 
 async def query_student_info(session, query):
     try: 
