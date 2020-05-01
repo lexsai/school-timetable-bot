@@ -39,3 +39,29 @@ def format_description(description):
 	return '\n'.join([line.strip() 
 					 for line in description.split('\n') 
 					 if line.strip() != ''])
+
+def check_week(tag):
+    week = None
+    if re.match(r'^(Mon|Tue|Wed|Thu|Fri)A{1}', tag.text):
+        week = 'a'
+    if re.match(r'^(Mon|Tue|Wed|Thu|Fri)B{1}', tag.text):
+        week = 'b'
+    return week
+
+def week_from_tag(tag):
+    week = check_week(tag)
+
+    if not week:
+        for sibling in tag.nextSiblings():
+            week = check_week(tag)
+
+            if week:
+                break
+
+        for sibling in tag.previousSiblings():
+            week = check_week(tag)
+
+            if week:
+                break
+
+    return week

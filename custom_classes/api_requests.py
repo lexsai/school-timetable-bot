@@ -71,7 +71,7 @@ def find_current_class(html):
             current_class = now_row.find('td', {'class' : 'timetable-dayperiod today'})
             if current_class:
                 current_class_html = (period, current_class)
-    
+
     if current_class_html:    
         current_class = {'period' : current_class_html[0],
                          'info' : {'title' : current_class_html[1].find('strong').text,
@@ -99,6 +99,13 @@ def find_day_classes(week, day_index, html):
 
     return day_classes
 
+def find_date(html):
+    soup = BeautifulSoup(html, 'html.parser')
+
+    day_overview = soup.find('th', {'class' : 'timetable-day today'})
+    weekday = soup.find('th', {'class' : 'timetable-date today'})
+
+    return cc.week_from_tag(day_overview), weekday.text
 
 async def query_student_info(session, query):
     try: 

@@ -85,6 +85,7 @@ class Timetable(commands.Cog):
                   colour=discord.Colour.from_rgb(80, 250, 123))
             await ctx.send(embed=embed)
             
+
     @commands.cooldown(1, 10, commands.BucketType.member)
     @commands.command()
     async def today(self, ctx, *, query = None):
@@ -93,24 +94,9 @@ class Timetable(commands.Cog):
 
             timetable_html = await cc.fetch_timetable(session, student_info['id'])
 
-            today_classes = cc.find_today_classes(timetable_html)
+            week, day = cc.find_date(timetable_html)
 
-        if today_classes:
-            embed = discord.Embed(title=f"Showing Today's Classes for \"{student_info['title']}\":",
-                                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
-                                  colour=discord.Colour.from_rgb(80, 250, 123))
-            for today_class in today_classes:
-                period = today_class['period'][2:]
-                title = today_class['info']['title'] 
-                info = cc.format_description(today_class['info']['description'])
-
-                embed.add_field(name=f"Period {period}", value=f'**{title}**\n{info}', inline=False)
-        else: 
-            embed = discord.Embed(title=f"No periods today for \"{student_info['title']}\".",
-                                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
-                                  colour=discord.Colour.from_rgb(80, 250, 123))
-    
-        await ctx.send(embed=embed)
+        await ctx.invoke(self.bot.get_command('timetable'), week, day, query=query)
 
     @commands.cooldown(1, 10, commands.BucketType.member)
     @commands.command()
