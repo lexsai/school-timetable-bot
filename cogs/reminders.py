@@ -34,6 +34,7 @@ class Reminders(commands.Cog):
                                       colour=discord.Colour.from_rgb(241, 250, 250))              
             else:
                 embed = discord.Embed(title='NEXT PERIOD',
+                					  description=f"Period {current_class['period'].text[1:]}",
                                       timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                                       colour=discord.Colour.from_rgb(241, 250, 250))
             for guild in self.bot.guilds:

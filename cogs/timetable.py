@@ -127,6 +127,20 @@ class Timetable(commands.Cog):
     
         await ctx.send(embed=embed)
 
+    @commands.cooldown(1, 10, commands.BucketType.member)
+    @commands.command()
+    async def date(self, ctx, *, query = None):
+        async with aiohttp.ClientSession() as session:
+            student_info = await cc.find_student_info(ctx, session, query)   
+
+            timetable_html = await cc.fetch_timetable(session, student_info['id'])
+
+            week, day = cc.find_date(timetable_html)
+
+        embed = discord.Embed(title=f"Today's date is {day.upper()}, Week {week.upper()}",
+                              timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
+                              colour=discord.Colour.from_rgb(80, 250, 123))
+        await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Timetable(bot))
