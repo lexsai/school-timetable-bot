@@ -96,7 +96,49 @@ class Timetable(commands.Cog):
 
             week, day = cc.find_date(timetable_html)
 
-        await ctx.invoke(self.bot.get_command('timetable'), week, day, query=query)
+        await ctx.invoke(self.bot.get_command('timetable'), week, day.name, query=query)
+
+    @commands.cooldown(1, 10, commands.BucketType.member)
+    @commands.command()
+    async def tomorrow(self, ctx, *, query = None):
+        async with aiohttp.ClientSession() as session:
+            student_info = await cc.find_student_info(ctx, session, query)   
+
+            timetable_html = await cc.fetch_timetable(session, student_info['id'])
+
+            week, day = cc.find_date(timetable_html)
+
+            if (day.value + 1) > 4:
+                day = cc.SchoolDays(0)
+                if week == 'a':
+                    week = 'b'
+                elif week =='b':
+                    week = 'a'
+            else:
+                day = cc.SchoolDays(day.value + 1)
+
+        await ctx.invoke(self.bot.get_command('timetable'), week, day.name, query=query)
+
+    @commands.cooldown(1, 10, commands.BucketType.member)
+    @commands.command()
+    async def yesterday(self, ctx, *, query = None):
+        async with aiohttp.ClientSession() as session:
+            student_info = await cc.find_student_info(ctx, session, query)   
+
+            timetable_html = await cc.fetch_timetable(session, student_info['id'])
+
+            week, day = cc.find_date(timetable_html)
+
+            if (day.value - 1) < 0:
+                day = cc.SchoolDays(4)
+                if week == 'a':
+                    week = 'b'
+                elif week =='b':
+                    week = 'a'
+            else:
+                day = cc.SchoolDays(day.value - 1)
+
+        await ctx.invoke(self.bot.get_command('timetable'), week, day.name, query=query)
 
     @commands.cooldown(1, 10, commands.BucketType.member)
     @commands.command()
@@ -137,7 +179,7 @@ class Timetable(commands.Cog):
 
             week, day = cc.find_date(timetable_html)
 
-        embed = discord.Embed(title=f"Today's date is {day.upper()}, Week {week.upper()}",
+        embed = discord.Embed(title=f"Today's date is {day.name.upper()}, Week {week.upper()}",
                               timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                               colour=discord.Colour.from_rgb(80, 250, 123))
         await ctx.send(embed=embed)

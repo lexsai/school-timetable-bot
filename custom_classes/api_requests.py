@@ -105,7 +105,7 @@ def find_date(html):
     day_overview = soup.find('th', {'class' : 'timetable-day today'})
     weekday = soup.find('th', {'class' : 'timetable-date today'})
 
-    return cc.week_from_tag(day_overview), weekday.text
+    return cc.week_from_tag(day_overview), cc.SchoolDays[weekday.text.upper()]
 
 async def query_student_info(session, query):
     try: 
