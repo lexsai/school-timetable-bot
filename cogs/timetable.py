@@ -98,7 +98,7 @@ class Timetable(commands.Cog):
             
 
     @commands.cooldown(1, 10, commands.BucketType.member)
-    @commands.command(help="Displays the classes of today. Can only be used on weekdays.")
+    @commands.command(help="Displays the classes of today. \nCan only be used on weekdays.")
     async def today(self, ctx, *, query = None):
         async with aiohttp.ClientSession() as session:
             student_info = await cc.find_student_info(ctx, session, query)   
@@ -110,7 +110,7 @@ class Timetable(commands.Cog):
         await ctx.invoke(self.bot.get_command('timetable'), week, day.name, query=query)
 
     @commands.cooldown(1, 10, commands.BucketType.member)
-    @commands.command(help="Displays the classes of tomorrow. Can only be used on weekdays.")
+    @commands.command(help="Displays the classes of tomorrow. \nCan only be used on weekdays.")
     async def tomorrow(self, ctx, *, query = None):
         async with aiohttp.ClientSession() as session:
             student_info = await cc.find_student_info(ctx, session, query)   
@@ -124,7 +124,7 @@ class Timetable(commands.Cog):
 
 
     @commands.cooldown(1, 10, commands.BucketType.member)
-    @commands.command(help="Displays the classes of yesterday. Can only be used on weekdays.")
+    @commands.command(help="Displays the classes of yesterday. \nCan only be used on weekdays.")
     async def yesterday(self, ctx, *, query = None):
         async with aiohttp.ClientSession() as session:
             student_info = await cc.find_student_info(ctx, session, query)   
@@ -137,7 +137,7 @@ class Timetable(commands.Cog):
         await ctx.invoke(self.bot.get_command('timetable'), week, day.name, query=query)
 
     @commands.cooldown(1, 10, commands.BucketType.member)
-    @commands.command(help="Displays the classes of a specific day. Week can only take the values of 'a' or 'b', and day_of_week must be a weekday.")
+    @commands.command(help="Displays the classes of a specific day. \nWeek can only take the values of 'a' or 'b', and day_of_week must be a weekday.")
     async def timetable(self, ctx, week, day_of_week, *, query = None):
         day_index = cc.SchoolDays[day_of_week.upper()].value
 
