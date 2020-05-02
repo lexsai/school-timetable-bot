@@ -14,6 +14,8 @@ class NormoBot(commands.Bot):
                              if os.path.splitext(cog)[1] == '.py'])
                                 
         self.load_extensions(extensions + ["jishaku"])
+
+        self.invite_url = 'https://discordapp.com/api/oauth2/authorize?client_id=697296771122069515&permissions=8&scope=bot'
         
     def load_extensions(self, extensions):
         print("Loading extensions:")

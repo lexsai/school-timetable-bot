@@ -4,6 +4,7 @@ import aiohttp
 import discord
 from bs4 import BeautifulSoup
 from discord.ext import commands
+from discord.ext import menus
 
 import custom_classes as cc
 
@@ -26,23 +27,6 @@ class Testing(commands.Cog):
     async def force(self, ctx, *, forced_class):
         self.bot.current_class = forced_class
         await ctx.send("Success.")
-
-    @commands.command()
-    async def test(self, ctx, *, query = None):
-        async with aiohttp.ClientSession() as session:
-            student_info = await cc.find_student_info(ctx, session, query)   
-
-            timetable_html = await cc.fetch_timetable(session, student_info['id'])
-
-            periods = cc.parse_period_classes(timetable_html)
-
-        for period, classes in periods.items():
-            for _class in classes:
-                try:
-                    if 'today' in _class['class']:
-                        print(_class.find('div', {'class' : 'timetable-class'}))
-                except TypeError:
-                    pass
 
 def setup(bot):
     bot.add_cog(Testing(bot))

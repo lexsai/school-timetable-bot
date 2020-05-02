@@ -1,6 +1,8 @@
 import re
 from enum import Enum
 
+import custom_classes as cc
+
 class SchoolDays(Enum):
 	MONDAY = 0
 	TUESDAY = 1
@@ -65,3 +67,27 @@ def week_from_tag(tag):
                 break
 
     return week
+
+def next_date(week, day):
+    if (day.value + 1) > 4:
+        day = cc.SchoolDays(0)
+        if week == 'a':
+            week = 'b'
+        elif week =='b':
+            week = 'a'
+    else:
+        day = cc.SchoolDays(day.value + 1)
+
+    return week, day
+
+def prev_date(week, day):
+    if (day.value - 1) < 0:
+        day = cc.SchoolDays(4)
+        if week == 'a':
+            week = 'b'
+        elif week =='b':
+            week = 'a'
+    else:
+        day = cc.SchoolDays(day.value - 1)
+
+    return week, day

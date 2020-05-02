@@ -12,11 +12,21 @@ import custom_classes as cc
 class Timetable(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
+        
     async def cog_command_error(self, ctx, error):
+        if ctx.command in (self.bot.get_command('yesterday'), 
+                           self.bot.get_command('tomorrow'),
+                           self.bot.get_command('today')):
+            if isinstance(error, commands.CommandInvokeError):
+                embed = discord.Embed(title='This command can only be used on weekdays.',
+                                      description=f'Usage: `>{ctx.command.name} {ctx.command.signature}`',
+                                      timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
+                                      colour=discord.Colour.from_rgb(255, 85, 85))
+                await ctx.send(embed=embed)     
+
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
             embed = discord.Embed(title='Student not found.',
-                                  description=f'Usage: `>{ctx.command.name} <name of student>`',
+                                  description=f'Usage: `>{ctx.command.name} {ctx.command.signature}`',
                                   timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                                   colour=discord.Colour.from_rgb(255, 85, 85))
             await ctx.send(embed=embed)   
@@ -31,7 +41,7 @@ class Timetable(commands.Cog):
         else:
             traceback.print_exc()
 
-    @commands.command()
+    @commands.command(help='Attaches identity as a role, makes the "query" argument optional.')
     async def identify(self, ctx, *, query):
         identity = cc.get_identity(ctx)
         if identity:
@@ -59,7 +69,7 @@ class Timetable(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.cooldown(1, 10, commands.BucketType.member)
-    @commands.command()
+    @commands.command(help="Displays the current class.")
     async def now(self, ctx, *, query=None):
         async with aiohttp.ClientSession() as session:
             student_info = await cc.find_student_info(ctx, session, query)
@@ -75,8 +85,9 @@ class Timetable(commands.Cog):
 
             embed = discord.Embed(title=f"Showing Current Class for \"{student_info['title']}\":",
                                   timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
-                                  colour=discord.Colour.from_rgb(80, 250, 123))
-            embed.add_field(name=f"Period {period}", value=f'**{title}**\n{info}', inline=False)
+                                  colour=discord.Colour.from_rgb(80, 250, 123)
+            ).add_field(name=f"Period {period}", value=f'**{title}**\n{info}', inline=False)
+            
             await ctx.send(embed=embed)
 
         else:
@@ -87,7 +98,7 @@ class Timetable(commands.Cog):
             
 
     @commands.cooldown(1, 10, commands.BucketType.member)
-    @commands.command()
+    @commands.command(help="Displays the classes of today. Can only be used on weekdays.")
     async def today(self, ctx, *, query = None):
         async with aiohttp.ClientSession() as session:
             student_info = await cc.find_student_info(ctx, session, query)   
@@ -99,7 +110,7 @@ class Timetable(commands.Cog):
         await ctx.invoke(self.bot.get_command('timetable'), week, day.name, query=query)
 
     @commands.cooldown(1, 10, commands.BucketType.member)
-    @commands.command()
+    @commands.command(help="Displays the classes of tomorrow. Can only be used on weekdays.")
     async def tomorrow(self, ctx, *, query = None):
         async with aiohttp.ClientSession() as session:
             student_info = await cc.find_student_info(ctx, session, query)   
@@ -107,20 +118,13 @@ class Timetable(commands.Cog):
             timetable_html = await cc.fetch_timetable(session, student_info['id'])
 
             week, day = cc.find_date(timetable_html)
-
-            if (day.value + 1) > 4:
-                day = cc.SchoolDays(0)
-                if week == 'a':
-                    week = 'b'
-                elif week =='b':
-                    week = 'a'
-            else:
-                day = cc.SchoolDays(day.value + 1)
+            week, day = cc.next_date(week, day)
 
         await ctx.invoke(self.bot.get_command('timetable'), week, day.name, query=query)
 
+
     @commands.cooldown(1, 10, commands.BucketType.member)
-    @commands.command()
+    @commands.command(help="Displays the classes of yesterday. Can only be used on weekdays.")
     async def yesterday(self, ctx, *, query = None):
         async with aiohttp.ClientSession() as session:
             student_info = await cc.find_student_info(ctx, session, query)   
@@ -128,20 +132,12 @@ class Timetable(commands.Cog):
             timetable_html = await cc.fetch_timetable(session, student_info['id'])
 
             week, day = cc.find_date(timetable_html)
-
-            if (day.value - 1) < 0:
-                day = cc.SchoolDays(4)
-                if week == 'a':
-                    week = 'b'
-                elif week =='b':
-                    week = 'a'
-            else:
-                day = cc.SchoolDays(day.value - 1)
+            week, day = cc.prev_date(week, day)
 
         await ctx.invoke(self.bot.get_command('timetable'), week, day.name, query=query)
 
     @commands.cooldown(1, 10, commands.BucketType.member)
-    @commands.command()
+    @commands.command(help="Displays the classes of a specific day. Week can only take the values of 'a' or 'b', and day_of_week must be a weekday.")
     async def timetable(self, ctx, week, day_of_week, *, query = None):
         day_index = cc.SchoolDays[day_of_week.upper()].value
 
@@ -170,7 +166,7 @@ class Timetable(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.cooldown(1, 10, commands.BucketType.member)
-    @commands.command()
+    @commands.command(help="Displays the current week (a or b) and the weekday.")
     async def date(self, ctx, *, query = None):
         async with aiohttp.ClientSession() as session:
             student_info = await cc.find_student_info(ctx, session, query)   

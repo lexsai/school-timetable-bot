@@ -3,3 +3,4 @@ aiohttp
 pytz
 beautifulsoup4
 jishaku
+git+https://github.com/Rapptz/discord-ext-menus
