@@ -17,7 +17,7 @@ class HelpCommand(commands.HelpCommand):
         ctx = self.context
 
         embed = discord.Embed(
-            title = f'{command.qualified_name.capitalize()} Command',
+            title = f'"{command.qualified_name.capitalize()}" Command',
             colour = discord.Colour.from_rgb(80, 250, 123),
             timestamp = datetime.datetime.now(tz=pytz.timezone('Australia/NSW')
         )).set_author(
