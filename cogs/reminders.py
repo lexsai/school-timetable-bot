@@ -6,7 +6,7 @@ import pytz
 import discord
 from discord.ext import tasks, commands
 
-import custom_classes as cc
+import utilities as util
 
 class Reminders(commands.Cog):
     def __init__(self, bot):
@@ -20,9 +20,9 @@ class Reminders(commands.Cog):
     @tasks.loop(minutes=1)
     async def class_checker(self):
         async with aiohttp.ClientSession() as session:
-            student_info = await cc.query_student_info(session, 'chi yung tsai')
-            timetable_html = await cc.fetch_timetable(session, student_info['id'])
-            current_class = cc.find_current_class(timetable_html)
+            student_info = await util.query_student_info(session, 'chi yung tsai')
+            timetable_html = await util.fetch_timetable(session, student_info['id'])
+            current_class = util.find_current_class(timetable_html)
 
         if self.bot.current_class != current_class:
             self.bot.current_class = current_class
@@ -34,7 +34,7 @@ class Reminders(commands.Cog):
                                       colour=discord.Colour.from_rgb(241, 250, 250))              
             else:
                 embed = discord.Embed(title='NEXT PERIOD',
-                					  description=f"Period {current_class['period'].text[1:]}",
+                                      description=f"Period {current_class['period'].text[1:]}",
                                       timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                                       colour=discord.Colour.from_rgb(241, 250, 250))
             for guild in self.bot.guilds:
@@ -56,4 +56,3 @@ class Reminders(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Reminders(bot))
-    

@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from discord.ext import commands
 from discord.ext import menus
 
-import custom_classes as cc
+import utilities as util
 
 class Testing(commands.Cog):
     def __init__(self,bot):
