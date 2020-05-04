@@ -28,5 +28,19 @@ class Testing(commands.Cog):
         self.bot.current_class = forced_class
         await ctx.send("Success.")
 
+    @commands.command()
+    async def query(self, ctx, identity: int):
+        row = await self.bot.database.query_public_tasks(identity)
+        await ctx.send(f'{row["id"]} : `{row["author"]}` "{row["description"]}"')
+
+    @commands.command()
+    async def create_task(self, ctx, *, description):
+        table = await self.bot.database.enter_public_task(ctx.author.id, description)
+       
+    @commands.command()
+    async def get_table(self, ctx):
+        table = await self.bot.database.get_public_tasks()
+        
+
 def setup(bot):
     bot.add_cog(Testing(bot))

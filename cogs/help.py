@@ -26,7 +26,7 @@ class HelpCommand(commands.HelpCommand):
         ).set_thumbnail(
             url = ctx.bot.user.avatar_url
         ).add_field(
-            name='Description',
+            name='Description', 
             value = command.help
         ).add_field(
             name='Usage',
