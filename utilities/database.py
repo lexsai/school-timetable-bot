@@ -20,14 +20,16 @@ class Database:
         self.bot = bot
         self.ready = False
         self.pool = None
-        self.credentials = {"user": "postgres", 
-                            "password": "incredib!e", 
-                            "database": "postgres", 
-                            "host": "127.0.0.1"}
+#        self.credentials = {"user": "postgres", 
+#                            "password": "incredib!e", 
+#                            "database": "postgres", 
+#                            "host": "127.0.0.1"}
+        self.dsn = os.environ['DATABASE_URL']
         bot.loop.create_task(self.init())
 
     async def init(self):
-        self.pool = await asyncpg.create_pool(**self.credentials)
+#        self.pool = await asyncpg.create_pool(**self.credentials)
+        self.pool = await asyncpg.create_pool(self.dsn)
         async with self.pool.acquire() as con:
             await con.execute(public)
             await con.execute(private)
