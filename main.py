@@ -5,9 +5,9 @@ import jishaku
 import discord
 from discord.ext import commands
 
-import utilities as util
+from utilities import NormoBot
 
-bot = util.NormoBot(command_prefix='>')
+bot = NormoBot(command_prefix='>')
 
 @bot.event
 async def on_ready():
