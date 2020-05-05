@@ -27,7 +27,7 @@ class Tasks(commands.Cog):
             return 'CONTRIBUTOR' in [role.name for role in ctx.author.roles]
         return commands.check(predicate)
 
-    @commands.group(invoke_without_command=True)
+    @commands.group(invoke_without_command=True, help="Displays the public billboard.")
     async def billboard(self, ctx):
         table = await self.bot.database.get_public_tasks()
         embed = discord.Embed(title='Public Billboard',
@@ -42,7 +42,7 @@ class Tasks(commands.Cog):
                             inline=False)
         await ctx.send(embed=embed)
 
-    @billboard.command()
+    @billboard.command(help="Create an entry on the public billboard.")
     @is_contributor()
     async def create(self, ctx, *, description):
         entry_limit = await self.bot.database.get_public_task_amount()
@@ -55,10 +55,10 @@ class Tasks(commands.Cog):
                                   colour=discord.Colour.from_rgb(80, 250, 123))
             await ctx.send(embed=embed)
 
-    @billboard.command()
+    @billboard.command(help="Remove an entry from the public billboard")
     @is_contributor()
-    async def delete(self, ctx, identity:int):
-        deleted_row = await self.bot.database.delete_public_task(identity)
+    async def delete(self, ctx, _id:int):
+        deleted_row = await self.bot.database.delete_public_task(_id)
         author = await self.bot.fetch_user(deleted_row["author"])
         embed = discord.Embed(title='Deleted Entry from Billboard',
                               description='\n'.join([f'`[AUTHOR]`: {str(author)}',

@@ -35,6 +35,34 @@ class HelpCommand(commands.HelpCommand):
 
         await ctx.send(embed=embed)
 
+    async def send_group_help(self, group):
+        ctx = self.context
+
+        embed = discord.Embed(
+            title = f'{group.qualified_name.capitalize()} Command',
+            colour = discord.Colour.from_rgb(80, 250, 123),
+            timestamp = datetime.datetime.now(tz=pytz.timezone('Australia/NSW'),
+        )).set_author(
+            name = ctx.me.name,
+            icon_url = ctx.bot.user.avatar_url
+        ).set_thumbnail(
+            url = ctx.bot.user.avatar_url
+        ).add_field(
+            name='Description', 
+            value = group.help
+        ).add_field(
+            name='Usage',
+            value = f'`{self.get_command_signature(group)}`'
+        )
+
+        for command in group.commands:
+            embed.add_field(name='\u200B', value = '**SUBCOMMAND:**', inline=False)
+            embed.add_field(name='Description', value = command.help)
+            embed.add_field(name='Usage', value = f'`{self.get_command_signature(command)}`')
+
+        await ctx.send(embed=embed)
+
+
     async def send_bot_help(self, mapping):
         ctx = self.context
         creator = ctx.bot.get_user(238899144457060352)
