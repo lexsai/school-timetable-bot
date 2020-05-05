@@ -96,6 +96,31 @@ class Timetable(commands.Cog):
                   colour=discord.Colour.from_rgb(80, 250, 123))
             await ctx.send(embed=embed)
             
+    @commands.cooldown(1, 10, commands.BucketType.member)
+    @commands.command(help="Displays the next class.")
+    async def next(self, ctx, *, query=None):
+        async with aiohttp.ClientSession() as session:
+            student_info = await util.find_student_info(ctx, session, query)
+            timetable_html = await util.fetch_timetable(session, student_info['id'])
+            next_class = util.find_next_class(timetable_html)
+
+        if next_class:
+            period = next_class['period'].text[1:]
+            title = next_class['info']['title'] 
+            info = util.format_description(next_class['info']['description'])
+
+            embed = discord.Embed(title=f"Showing Next Class for \"{student_info['title']}\":",
+                                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
+                                  colour=discord.Colour.from_rgb(80, 250, 123)
+            ).add_field(name=f"Period {period}", value=f'**{title}**\n{info}', inline=False)
+            
+            await ctx.send(embed=embed)
+
+        else:
+            embed = discord.Embed(title=f"No timetabled class next period for \"{student_info['title']}\":",
+                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
+                  colour=discord.Colour.from_rgb(80, 250, 123))
+            await ctx.send(embed=embed)
 
     @commands.cooldown(1, 10, commands.BucketType.member)
     @commands.command(help="Displays the classes of today. \nCan only be used on weekdays.")

@@ -81,6 +81,26 @@ def find_current_class(html):
 
     return current_class
 
+def find_next_class(html):
+    periods = find_period_classes(html)
+
+    next_class_html = None
+    for period in periods:
+        next_row = period.find_parent('tr', {'class' : 'now'}).next_sibling
+        if next_row:
+            next_class = next_row.find('td', {'class' : 'timetable-dayperiod today'})
+            if next_class:
+                next_class_html = (period, current_class)
+
+    if next_class_html:    
+        next_class = {'period' : next_class_html[0],
+                         'info' : {'title' : next_class_html[1].find('strong').text,
+                                   'description' : next_class_html[1].find('br').text}}
+    else:
+        next_class = None
+
+    return next_class
+
 def find_day_classes(week, day_index, html):
     periods = parse_period_classes(html)
 
