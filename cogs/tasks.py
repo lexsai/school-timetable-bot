@@ -11,7 +11,7 @@ class Tasks(commands.Cog):
     async def cog_check(self, ctx): 
         return ctx.bot.database.ready
 
-    def is_contributor(self):
+    def is_contributor():
         async def predicate(ctx):
             return 'CONTRIBUTOR' in [role.name for role in ctx.author.roles]
         return commands.check(predicate)
