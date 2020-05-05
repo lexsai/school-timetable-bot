@@ -21,22 +21,12 @@ class Database:
         self.bot = bot
         self.ready = False
         self.pool = None
-        try:
-            stream = os.popen('heroku config:get DATABASE_URL -a normobot')
-            database_url = stream.read().strip()
-        except:
-            database_url = os.environ['DATABASE_URL']
+        database_url = os.environ['DATABASE_URL']
         self.dsn = database_url
         bot.loop.create_task(self.init())
 
     async def init(self):        
-        try:
-            ssl_object = ssl.create_default_context()
-            ssl_object.check_hostname = False
-            ssl_object.verify_mode = ssl.CERT_NONE
-            self.pool = await asyncpg.create_pool(self.dsn, ssl=ssl_object)
-        except:
-            self.pool = await asyncpg.create_pool(self.dsn)
+        self.pool = await asyncpg.create_pool(self.dsn)
         async with self.pool.acquire() as con:
             await con.execute(public)
             await con.execute(private)

@@ -4,7 +4,6 @@ import aiohttp
 import discord
 from bs4 import BeautifulSoup
 from discord.ext import commands
-from discord.ext import menus
 
 import utilities as util
 
