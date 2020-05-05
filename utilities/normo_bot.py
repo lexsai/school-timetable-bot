@@ -16,7 +16,7 @@ class NormoBot(commands.Bot):
                              for cog in os.listdir("cogs") 
                              if os.path.splitext(cog)[1] == '.py'])
     
-        #self.database = util.Database(self)
+        self.database = util.Database(self)
 
         self.load_extensions(extensions + ["jishaku"])
         
