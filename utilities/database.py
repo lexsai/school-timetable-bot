@@ -59,3 +59,10 @@ class Database:
     async def get_public_task_amount(self):
         table = await self.get_public_tasks()
         return len(table)
+
+    async def drop_tasks(self):
+        sql = "DROP TABLE private_tasks, public_tasks;"
+        async with self.pool.acquire() as con:
+            await con.execute(sql)
+            await con.execute(public)
+            await con.execute(private)

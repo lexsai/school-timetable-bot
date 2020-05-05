@@ -37,9 +37,9 @@ class Testing(commands.Cog):
         table = await self.bot.database.enter_public_task(ctx.author.id, description)
        
     @commands.command()
-    async def get_table(self, ctx):
-        table = await self.bot.database.get_public_tasks()
-        
+    async def reset(self, ctx):
+        await self.bot.database.drop_tasks()
+        await ctx.send("Success.")
 
 def setup(bot):
     bot.add_cog(Testing(bot))
