@@ -9,7 +9,10 @@ class Tasks(commands.Cog):
         self.bot = bot
 
     async def cog_check(self, ctx): 
-        return ctx.bot.database.ready and 'CONTRIBUTOR' in [role.name for role in ctx.author.roles]
+        return ctx.bot.database.ready
+
+    async def is_contributor(self, ctx):
+        return 'CONTRIBUTOR' in [role.name for role in ctx.author.roles]
 
     @commands.group(invoke_without_command=True)
     async def billboard(self, ctx):
@@ -26,6 +29,7 @@ class Tasks(commands.Cog):
         await ctx.send(embed=embed)
 
     @billboard.command()
+    @commands.check(is_contributor)
     async def create(self, ctx, *, description):
         entry_limit = await self.bot.database.get_public_task_amount()
         if entry_limit < 5:
@@ -38,6 +42,7 @@ class Tasks(commands.Cog):
             await ctx.send(embed=embed)
 
     @billboard.command()
+    @commands.check(is_contributor)
     async def delete(self, ctx, identity:int):
         deleted_row = await self.bot.database.delete_public_task(identity)
         embed = discord.Embed(title='Deleted Entry from Billboard',
