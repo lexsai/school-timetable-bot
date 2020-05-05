@@ -21,8 +21,11 @@ class Database:
         self.bot = bot
         self.ready = False
         self.pool = None
-        stream = os.popen('heroku config:get DATABASE_URL -a normobot')
-        database_url = stream.read().strip()
+        try:
+            stream = os.popen('heroku config:get DATABASE_URL -a normobot')
+            database_url = stream.read().strip()
+        except:
+            database_url = os.environ['DATABASE_URL']
         self.dsn = database_url
         bot.loop.create_task(self.init())
 
