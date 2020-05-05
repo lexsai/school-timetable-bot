@@ -22,8 +22,9 @@ class Tasks(commands.Cog):
                               timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                               colour=discord.Colour.from_rgb(80, 250, 123))
         for row in table:
+            author = await self.bot.fetch_user(row["author"])
             embed.add_field(name=f'ID: {row["id"]}',
-                            value='\n'.join([f'`[AUTHOR]`: {str(await self.bot.fetch_user(row["author"]))}',
+                            value='\n'.join([f'`[AUTHOR]`: {str(author)}',
                                              f'`[DESCRIPTION]`: {row["description"]}']),
                             inline=False)
         await ctx.send(embed=embed)
@@ -45,8 +46,9 @@ class Tasks(commands.Cog):
     @commands.check(is_contributor)
     async def delete(self, ctx, identity:int):
         deleted_row = await self.bot.database.delete_public_task(identity)
+        author = await self.bot.fetch_user(deleted_row["author"])
         embed = discord.Embed(title='Deleted Entry from Billboard',
-                              description='\n'.join([f'`[AUTHOR]`: {str(await self.bot.fetch_user(deleted_row["author"]))}',
+                              description='\n'.join([f'`[AUTHOR]`: {str(author)}',
                                                      f'`[DESCRIPTION]`: {deleted_row["description"]}']),
                               timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                               colour=discord.Colour.from_rgb(80, 250, 123))

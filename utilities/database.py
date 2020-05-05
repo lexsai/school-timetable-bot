@@ -30,11 +30,13 @@ class Database:
         bot.loop.create_task(self.init())
 
     async def init(self):        
-        ssl_object = ssl.create_default_context()
-        ssl_object.check_hostname = False
-        ssl_object.verify_mode = ssl.CERT_NONE
-#        self.pool = await asyncpg.create_pool(**self.credentials)
-        self.pool = await asyncpg.create_pool(self.dsn, ssl=ssl_object)
+        try:
+            ssl_object = ssl.create_default_context()
+            ssl_object.check_hostname = False
+            ssl_object.verify_mode = ssl.CERT_NONE
+            self.pool = await asyncpg.create_pool(self.dsn, ssl=ssl_object)
+        except:
+            self.pool = await asyncpg.create_pool(self.dsn)
         async with self.pool.acquire() as con:
             await con.execute(public)
             await con.execute(private)
