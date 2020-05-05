@@ -54,13 +54,13 @@ def week_from_tag(tag):
     week = check_week(tag)
 
     if not week:
-        for sibling in tag.nextSiblings():
+        for sibling in tag.next_siblings:
             week = check_week(tag)
 
             if week:
                 break
 
-        for sibling in tag.previousSiblings():
+        for sibling in tag.next_siblings:
             week = check_week(tag)
 
             if week:

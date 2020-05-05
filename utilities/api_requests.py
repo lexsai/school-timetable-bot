@@ -84,16 +84,23 @@ def find_current_class(html):
 def find_next_class(html):
     periods = find_period_classes(html)
 
+    next_class_html = None
     for period in periods:
         now_row = period.find_parent('tr', {'class' : 'now'})
         if now_row:
-            next_class = now_row.next_sibling.next_sibling.find('td', {'class' : 'timetable-dayperiod today'})
+            next_class = None
+            for sibling in now_row.next_siblings:
+                if sibling != '\n':
+                    if sibling.find('th', {'class' : 'timetable-period'}).text.startswith('P'):
+                        next_class = sibling.find('td', {'class' : 'timetable-dayperiod today'})
+                        break
             if next_class:
                 next_class_html = (period, next_class)
 
+
     if next_class_html:    
         next_class = {'period' : str(int(next_class_html[0].text[1:]) + 1),
-                         'info' : {'title' : next_class_html[1].find('strong').text,
+                        'info' : {'title' : next_class_html[1].find('strong').text,
                                    'description' : next_class_html[1].find('br').text}}
     else:
         next_class = None
