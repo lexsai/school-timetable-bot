@@ -86,9 +86,9 @@ def find_next_class(html):
 
     next_class_html = None
     for period in periods:
-        next_row = period.find_parent('tr', {'class' : 'now'}).next_sibling
+        next_row = period.find_parent('tr', {'class' : 'now'})
         if next_row:
-            next_class = next_row.find('td', {'class' : 'timetable-dayperiod today'})
+            next_class = next_row..next_sibling.find('td', {'class' : 'timetable-dayperiod today'})
             if next_class:
                 next_class_html = (period, current_class)
 
