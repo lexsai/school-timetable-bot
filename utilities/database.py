@@ -1,4 +1,5 @@
 import os
+import ssl
 
 import asyncpg
 from discord.ext import commands
@@ -20,16 +21,17 @@ class Database:
         self.bot = bot
         self.ready = False
         self.pool = None
-#        self.credentials = {"user": "postgres", 
-#                            "password": "incredib!e", 
-#                            "database": "postgres", 
-#                            "host": "127.0.0.1"}
-        self.dsn = os.environ['DATABASE_URL']
+        stream = os.popen('heroku config:get DATABASE_URL -a normobot')
+        database_url = stream.read().strip()
+        self.dsn = database_url
         bot.loop.create_task(self.init())
 
-    async def init(self):
+    async def init(self):        
+        ssl_object = ssl.create_default_context()
+        ssl_object.check_hostname = False
+        ssl_object.verify_mode = ssl.CERT_NONE
 #        self.pool = await asyncpg.create_pool(**self.credentials)
-        self.pool = await asyncpg.create_pool(self.dsn)
+        self.pool = await asyncpg.create_pool(self.dsn, ssl=ssl_object)
         async with self.pool.acquire() as con:
             await con.execute(public)
             await con.execute(private)

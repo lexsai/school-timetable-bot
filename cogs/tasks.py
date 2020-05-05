@@ -9,7 +9,7 @@ class Tasks(commands.Cog):
         self.bot = bot
 
     async def cog_check(self, ctx): 
-        return ctx.bot.database.ready
+        return ctx.bot.database.ready and 'CONTRIBUTOR' in [role.name for role in ctx.author.roles]
 
     @commands.group(invoke_without_command=True)
     async def billboard(self, ctx):
@@ -20,7 +20,7 @@ class Tasks(commands.Cog):
                               colour=discord.Colour.from_rgb(80, 250, 123))
         for row in table:
             embed.add_field(name=f'ID: {row["id"]}',
-                            value='\n'.join([f'`[AUTHOR]`: {ctx.guild.get_member(row["author"]).mention}',
+                            value='\n'.join([f'`[AUTHOR]`: {str(await self.bot.fetch_user(row["author"]))}',
                                              f'`[DESCRIPTION]`: {row["description"]}']),
                             inline=False)
         await ctx.send(embed=embed)
@@ -41,7 +41,7 @@ class Tasks(commands.Cog):
     async def delete(self, ctx, identity:int):
         deleted_row = await self.bot.database.delete_public_task(identity)
         embed = discord.Embed(title='Deleted Entry from Billboard',
-                              description='\n'.join([f'`[AUTHOR]`: {ctx.guild.get_member(deleted_row["author"]).mention}',
+                              description='\n'.join([f'`[AUTHOR]`: {str(await self.bot.fetch_user(deleted_row["author"]))}',
                                                      f'`[DESCRIPTION]`: {deleted_row["description"]}']),
                               timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                               colour=discord.Colour.from_rgb(80, 250, 123))
