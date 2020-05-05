@@ -1,3 +1,4 @@
+import traceback
 import datetime
 
 import pytz
@@ -7,6 +8,16 @@ from discord.ext import commands
 class Tasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    async def cog_command_error(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            embed = discord.Embed(title='You are not a contributor.',
+                                  description=f'Usage: `>{ctx.command.name} {ctx.command.signature}`',
+                                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
+                                  colour=discord.Colour.from_rgb(255, 85, 85))
+            await ctx.send(embed=embed)     
+        else:
+            traceback.print_exc()
 
     async def cog_check(self, ctx): 
         return ctx.bot.database.ready
