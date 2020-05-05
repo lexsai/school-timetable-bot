@@ -11,8 +11,10 @@ class Tasks(commands.Cog):
     async def cog_check(self, ctx): 
         return ctx.bot.database.ready
 
-    async def is_contributor(self, ctx):
-        return 'CONTRIBUTOR' in [role.name for role in ctx.author.roles]
+    def is_contributor(self):
+        async def predicate(ctx):
+            return 'CONTRIBUTOR' in [role.name for role in ctx.author.roles]
+        return commands.check(predicate)
 
     @commands.group(invoke_without_command=True)
     async def billboard(self, ctx):
@@ -30,7 +32,7 @@ class Tasks(commands.Cog):
         await ctx.send(embed=embed)
 
     @billboard.command()
-    @commands.check(is_contributor)
+    @is_contributor()
     async def create(self, ctx, *, description):
         entry_limit = await self.bot.database.get_public_task_amount()
         if entry_limit < 5:
@@ -43,7 +45,7 @@ class Tasks(commands.Cog):
             await ctx.send(embed=embed)
 
     @billboard.command()
-    @commands.check(is_contributor)
+    @is_contributor()
     async def delete(self, ctx, identity:int):
         deleted_row = await self.bot.database.delete_public_task(identity)
         author = await self.bot.fetch_user(deleted_row["author"])
