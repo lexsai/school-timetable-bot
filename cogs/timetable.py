@@ -105,7 +105,7 @@ class Timetable(commands.Cog):
             next_class = util.find_next_class(timetable_html)
 
         if next_class:
-            period = next_class['period'].text[1:]
+            period = next_class['period']
             title = next_class['info']['title'] 
             info = util.format_description(next_class['info']['description'])
 

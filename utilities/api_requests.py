@@ -92,7 +92,7 @@ def find_next_class(html):
                 next_class_html = (period, next_class)
 
     if next_class_html:    
-        next_class = {'period' : next_class_html[0],
+        next_class = {'period' : str(int(next_class_html[0].text[1:]) + 1),
                          'info' : {'title' : next_class_html[1].find('strong').text,
                                    'description' : next_class_html[1].find('br').text}}
     else:
