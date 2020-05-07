@@ -87,11 +87,12 @@ class Tasks(commands.Cog):
                               description='Limit of 5 entries on your private todo. *pls dont break*',
                               timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                               colour=discord.Colour.from_rgb(80, 250, 123))
-        for row in table:
-            author = await self.bot.fetch_user(row["author"])
-            embed.add_field(name=f'ID: {row["id"]}',
-                            value=f'`[DESCRIPTION]`: {row["description"]}',
-                            inline=False)
+        if table:
+            for row in table:
+                author = await self.bot.fetch_user(row["author"])
+                embed.add_field(name=f'ID: {row["id"]}',
+                                value=f'`[DESCRIPTION]`: {row["description"]}',
+                                inline=False)
         await ctx.send(embed=embed)
 
     @todo.command(help="Create an entry on your private todo.")
