@@ -30,8 +30,8 @@ class Tasks(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def make_contributor(self, ctx, _id:int):
-        userid = await self.bot.fetch_user(_id).id
+    async def contributor(self, ctx, _id:int):
+        userid = self.bot.fetch_user(_id).id
         await self.bot.database.enter_contributor(userid)
         embed = discord.Embed(title=f'{str(userid)} is now a contributor.',
                               timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
