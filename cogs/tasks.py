@@ -33,7 +33,7 @@ class Tasks(commands.Cog):
     async def contributor(self, ctx, _id:int):
         user = await self.bot.fetch_user(_id)
         await self.bot.database.enter_contributor(user.id)
-        embed = discord.Embed(title=f'{str(userid)} is now a contributor.',
+        embed = discord.Embed(title=f'{str(user)} is now a contributor.',
                               timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                               colour=discord.Colour.from_rgb(80, 250, 123))
         await ctx.send(embed=embed)
