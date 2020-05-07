@@ -98,7 +98,7 @@ class Tasks(commands.Cog):
     @todo.command(help="Create an entry on your private todo.")
     @is_contributor()
     async def create(self, ctx, *, description):
-        entries = len(await self.bot.database.query_private_tasks(ctx.author.id) or 0) 
+        entries = len(await self.bot.database.query_private_tasks(ctx.author.id)) or 0 
         if entries < 5:
             await self.bot.database.enter_private_task(ctx.author.id, description)
             embed = discord.Embed(title='Created Entry on your private todo.',
