@@ -89,6 +89,7 @@ class Tasks(commands.Cog):
                               colour=discord.Colour.from_rgb(80, 250, 123))
         if table:
             for row in table:
+                print(row)
                 author = await self.bot.fetch_user(row["author"])
                 embed.add_field(name=f'ID: {row["id"]}',
                                 value=f'`[DESCRIPTION]`: {row["description"]}',
