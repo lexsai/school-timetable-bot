@@ -55,7 +55,7 @@ class Database:
             await self.pool.execute(sql, author_id, description)
 
     async def query_private_tasks(self, identity):
-        sql = "SELECT * FROM private_tasks WHERE id = $1;"
+        sql = "SELECT * FROM private_tasks WHERE author = $1;"
         async with self.pool.acquire() as con:
             row = await con.fetchrow(sql, identity)
         return row
