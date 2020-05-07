@@ -71,6 +71,12 @@ class Database:
         async with self.pool.acquire() as con:
             await self.pool.execute(sql, author_id, description)
 
+    async def get_private_task(self, identity):
+        sql = "SELECT * FROM contributors WHERE id = $1;"
+        async with self.pool.acquire() as con:
+            row = await con.fetchrow(sql, identity)
+        return row
+
     async def query_public_tasks(self, identity):
         sql = "SELECT * FROM public_tasks WHERE id = $1;"
         async with self.pool.acquire() as con:

@@ -96,7 +96,6 @@ class Tasks(commands.Cog):
         await ctx.send(embed=embed)
 
     @todo.command(help="Create an entry on your private todo.")
-    @is_contributor()
     async def create(self, ctx, *, description):
         entries = len(await self.bot.database.query_private_tasks(ctx.author.id) or []) 
         if entries < 5:
@@ -109,13 +108,15 @@ class Tasks(commands.Cog):
 
     @todo.command(help="Remove an entry from your private todo.")
     async def delete(self, ctx, _id:int):
-        deleted_row = await self.bot.database.delete_private_task(_id)
-        author = await self.bot.fetch_user(deleted_row["author"])
-        embed = discord.Embed(title='Deleted Entry from your private todo.',
-                              description=f'`[DESCRIPTION]`: {deleted_row["description"]}',
-                              timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),
-                              colour=discord.Colour.from_rgb(80, 250, 123))
-        await ctx.send(embed=embed)
+        row = await self.bot.database.get_private_task(_id)
+        if row["author"] == ctx.author.id:
+            deleted_row = await self.bot.database.delete_private_task(_id)
+            author = await self.bot.fetch_user(deleted_row["author"])
+            embed = discord.Embed(title='Deleted Entry from your private todo.',
+                                  description=f'`[DESCRIPTION]`: {deleted_row["description"]}',
+                                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),
+                                  colour=discord.Colour.from_rgb(80, 250, 123))
+            await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Tasks(bot))
