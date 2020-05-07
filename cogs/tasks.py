@@ -24,7 +24,7 @@ class Tasks(commands.Cog):
 
     def is_contributor():
         async def predicate(ctx):
-            if self.bot.database.get_contributor(ctx.author.id):
+            if await ctx.bot.database.get_contributor(ctx.author.id):
                 return True
         return commands.check(predicate)
 
@@ -32,7 +32,7 @@ class Tasks(commands.Cog):
     @commands.is_owner()
     async def make_contributor(self, ctx, _id:int):
         userid = self.bot.fetch_user(_id).id
-        self.bot.database.enter_contributor(userid)
+        await self.bot.database.enter_contributor(userid)
         embed = discord.Embed(title=f'{str(userid)} is now a contributor.',
                               timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                               colour=discord.Colour.from_rgb(80, 250, 123))
