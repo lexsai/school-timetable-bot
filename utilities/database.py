@@ -34,6 +34,7 @@ class Database:
         async with self.pool.acquire() as con:
             await con.execute(public)
             await con.execute(private)
+            await con.execute(contributors)
             print("Ensured existence of task tables")
         self.ready = True
 
