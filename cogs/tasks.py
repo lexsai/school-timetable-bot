@@ -88,8 +88,8 @@ class Tasks(commands.Cog):
                               timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
                               colour=discord.Colour.from_rgb(80, 250, 123))
         if table:
+            print(table)
             for row in table:
-                print(row)
                 author = await self.bot.fetch_user(row["author"])
                 embed.add_field(name=f'ID: {row["id"]}',
                                 value=f'`[DESCRIPTION]`: {row["description"]}',
