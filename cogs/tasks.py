@@ -79,5 +79,42 @@ class Tasks(commands.Cog):
                               colour=discord.Colour.from_rgb(80, 250, 123))
         await ctx.send(embed=embed)
 
+
+    @commands.group(invoke_without_command=True, help="Displays your private todo.")
+    async def todo(self, ctx):
+        table = await self.bot.database.query_private_tasks(ctx.author.id)
+        embed = discord.Embed(title='Private Todo',
+                              description='Limit of 5 entries on your private todo. *pls dont break*',
+                              timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
+                              colour=discord.Colour.from_rgb(80, 250, 123))
+        for row in table:
+            author = await self.bot.fetch_user(row["author"])
+            embed.add_field(name=f'ID: {row["id"]}',
+                            value=f'`[DESCRIPTION]`: {row["description"]}',
+                            inline=False)
+        await ctx.send(embed=embed)
+
+    @todo.command(help="Create an entry on your private todo.")
+    @is_contributor()
+    async def create(self, ctx, *, description):
+        entries = await self.bot.database.query_private_tasks(ctx.author.id)
+        if entries < 5:
+            await self.bot.database.enter_private_task(ctx.author.id, description)
+            embed = discord.Embed(title='Created Entry on your private todo.',
+                                  description=f'`[DESCRIPTION]`: {description}',
+                                  timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
+                                  colour=discord.Colour.from_rgb(80, 250, 123))
+            await ctx.send(embed=embed)
+
+    @todo.command(help="Remove an entry from your private todo.")
+    async def delete(self, ctx, _id:int):
+        deleted_row = await self.bot.database.delete_private_task(_id)
+        author = await self.bot.fetch_user(deleted_row["author"])
+        embed = discord.Embed(title='Deleted Entry from your private todo.',
+                              description=f'`[DESCRIPTION]`: {deleted_row["description"]}',
+                              timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),
+                              colour=discord.Colour.from_rgb(80, 250, 123))
+        await ctx.send(embed=embed)
+
 def setup(bot):
     bot.add_cog(Tasks(bot))

@@ -49,8 +49,25 @@ class Database:
             row = await con.fetchrow(sql, author_id)
         return row
 
-    async def enter_public_task(self, author_id, description):
-        sql = "INSERT INTO public_tasks(author, description) VALUES($1, $2);"
+    async def enter_private_task(self, author_id, description):
+        sql = "INSERT INTO private_tasks(author, description) VALUES($1, $2);"
+        async with self.pool.acquire() as con:
+            await self.pool.execute(sql, author_id, description)
+
+    async def query_private_tasks(self, identity):
+        sql = "SELECT * FROM private_tasks WHERE id = $1;"
+        async with self.pool.acquire() as con:
+            row = await con.fetchrow(sql, identity)
+        return row
+
+    async def delete_private_task(self, identity):
+        sql = "DELETE FROM private_tasks WHERE id = $1 RETURNING *;"
+        async with self.pool.acquire() as con:
+            deleted_row = await con.fetchrow(sql, identity)         
+        return deleted_row
+
+    async def enter_private_task(self, author_id, description):
+        sql = "INSERT INTO private_tasks(author, description) VALUES($1, $2);"
         async with self.pool.acquire() as con:
             await self.pool.execute(sql, author_id, description)
 
