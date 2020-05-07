@@ -16,6 +16,10 @@ private = """CREATE TABLE IF NOT EXISTS private_tasks (
                        description VARCHAR (255) NOT NULL
             )"""
 
+contributors = """CREATE TABLE IF NOT EXISTS contributors (
+                       author BIGINT UNIQUE
+            )"""
+
 class Database:
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -32,6 +36,17 @@ class Database:
             await con.execute(private)
             print("Ensured existence of task tables")
         self.ready = True
+
+    async def enter_contributor(self, author_id):
+        sql = "INSERT INTO contributors(author) VALUES($1);"
+        async with self.pool.acquire() as con:
+            await self.pool.execute(sql, author_id)
+
+    async def get_contributor(self, author_id):
+        sql = "SELECT * FROM contributors WHERE author = $1;"
+        async with self.pool.acquire() as con:
+            row = await con.fetchrow(sql, author_id)
+        return row
 
     async def enter_public_task(self, author_id, description):
         sql = "INSERT INTO public_tasks(author, description) VALUES($1, $2);"

@@ -24,8 +24,20 @@ class Tasks(commands.Cog):
 
     def is_contributor():
         async def predicate(ctx):
-            return 'CONTRIBUTOR' in [role.name for role in ctx.author.roles]
+            if self.bot.database.get_contributor(ctx.author.id):
+                return True
         return commands.check(predicate)
+
+    @commands.command()
+    @commands.is_owner()
+    async def make_contributor(self, ctx, _id:int):
+        userid = self.bot.fetch_user(_id).id
+        self.bot.database.enter_contributor(userid)
+        embed = discord.Embed(title=f'{str(userid)} is now a contributor.',
+                              timestamp=datetime.datetime.now(tz=pytz.timezone('Australia/NSW')),    
+                              colour=discord.Colour.from_rgb(80, 250, 123))
+        await ctx.send(embed=embed)
+
 
     @commands.group(invoke_without_command=True, help="Displays the public billboard.")
     async def billboard(self, ctx):
