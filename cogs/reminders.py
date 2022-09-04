@@ -20,7 +20,7 @@ class Reminders(commands.Cog):
     @tasks.loop(minutes=1)
     async def class_checker(self):
         async with aiohttp.ClientSession() as session:
-            student_info = await util.query_student_info(session, 'chi yung tsai')
+            student_info = await util.query_student_info(session, '')
             timetable_html = await util.fetch_timetable(session, student_info['id'])
             current_class = util.find_current_class(timetable_html)
 
